@@ -13,6 +13,33 @@ This project implements a complete AML detection system using machine learning t
 - Visualization of results and model performance
 - Exportable reports of suspicious activities
 
+## Suspicious Transaction Detection Criteria
+
+The AML algorithm uses the following factors to determine if a transaction or customer activity is suspicious:
+
+### Customer Risk Factors:
+- **Politically Exposed Person (PEP) Status**: Customers flagged as politically exposed persons receive heightened scrutiny
+- **Sanctions Match**: Customers who match against sanctions lists are automatically considered high risk
+- **Address Change Frequency**: Frequent changes of address may indicate attempts to avoid detection
+- **Age and Occupation**: Certain combinations of age and occupation with unusual transaction patterns are flagged
+- **Nationality**: Transactions involving high-risk jurisdictions receive additional scrutiny
+
+### Transaction Risk Factors:
+- **Large Transaction Amounts**: Unusually large transactions relative to customer history
+- **Cash Transactions**: High frequency or volume of cash transactions
+- **Cross-Border Activity**: Transactions involving multiple jurisdictions, especially high-risk countries
+- **Transaction Patterns**: Unusual patterns like rapid deposits followed by withdrawals (layering)
+- **Country Risk Rating**: Transactions involving countries with high risk ratings for financial crimes
+- **Transaction Type Distribution**: Unusual distribution of transaction types compared to normal patterns
+
+### Aggregated Customer Behavior:
+- **Transaction Velocity**: Sudden increase in transaction frequency
+- **Transaction Volume**: Significant changes in total transaction amounts
+- **Cash to Non-Cash Ratio**: High percentage of cash transactions relative to electronic transactions
+- **Transaction Amount Variability**: Highly variable transaction amounts that don't follow regular patterns
+
+The model calculates a composite risk score from these factors, with indicators weighted by their predictive power as determined during model training. The Random Forest classifier makes the final determination by analyzing these features collectively rather than using simple threshold rules.
+
 ## Project Structure
 
 ```

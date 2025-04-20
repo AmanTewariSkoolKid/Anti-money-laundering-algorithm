@@ -1,0 +1,54 @@
+================================================================================
+AML RISK DETECTION MODEL RESULTS
+================================================================================
+
+Report generated: 2025-04-20 09:45:06
+
+Model type: RandomForestClassifier
+
+----------------------------------------
+PERFORMANCE METRICS
+----------------------------------------
+
+Precision:    0.8998
+Recall:       0.9178
+F1 Score:     0.9087
+ROC AUC:      0.9956
+PR AUC:       0.9750
+
+----------------------------------------
+CLASSIFICATION REPORT
+----------------------------------------
+
+              precision    recall  f1-score   support
+
+           0       0.99      0.98      0.98      2550
+           1       0.90      0.92      0.91       450
+
+    accuracy                           0.97      3000
+   macro avg       0.94      0.95      0.95      3000
+weighted avg       0.97      0.97      0.97      3000
+
+----------------------------------------
+CONFUSION MATRIX
+----------------------------------------
+
+                  Predicted
+                  Not Suspicious  Suspicious
+Actual Not Suspicious  2504            46
+      Suspicious      37            413
+
+----------------------------------------
+VISUALIZATIONS
+----------------------------------------
+
+Confusion Matrix: c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\results\confusion_matrix_20250420_094505.png
+Roc Curve: c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\results\roc_curve_20250420_094505.png
+Pr Curve: c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\results\pr_curve_20250420_094505.png
+Feature Importance: c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\results\feature_importance_20250420_094505.png
+
+----------------------------------------
+SUSPICIOUS TRANSACTIONS
+----------------------------------------
+
+List of flagged suspicious transactions saved to: c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\results\suspicious_transactions_20250420_094506.csv

@@ -87,7 +87,7 @@ The model calculates a composite risk score from these factors, with indicators 
 
 1. Clone this repository:
 ```bash
-git clone https://github.com/yourusername/Anti-money-laundering-algorithm.git
+git clone https://github.com/AmanTewariSkoolKid//Anti-money-laundering-algorithm.git
 cd Anti-money-laundering-algorithm
 ```
 

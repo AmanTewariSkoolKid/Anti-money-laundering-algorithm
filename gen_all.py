@@ -24,6 +24,9 @@ def check_data_consistency(data_path=None, fix_inconsistencies=True):
     if data_path is None:
         data_path = os.path.dirname(os.path.abspath(__file__))
     
+    # Look in data_csv folder
+    data_path = os.path.join(data_path, 'data_csv')
+    
     print("\n" + "="*60)
     print("Validating data consistency...")
     print("="*60)
@@ -159,19 +162,20 @@ def generate_all_files(num_customers=1000, num_transactions=10000, data_path=Non
     if data_path is None:
         data_path = os.path.dirname(os.path.abspath(__file__))
     
+    # Create data_csv folder within the data_path
+    data_csv_path = os.path.join(data_path, 'data_csv')
+    os.makedirs(data_csv_path, exist_ok=True)
+    
     print("\n" + "="*60)
     print(f"Generating AML Data Files ({datetime.now().strftime('%Y-%m-%d %H:%M:%S')})")
     print("="*60)
-    print(f"Saving files to: {data_path}")
-    
-    # Ensure output directory exists
-    os.makedirs(data_path, exist_ok=True)
+    print(f"Saving files to: {data_csv_path}")
     
     # File paths
-    customer_profiles_path = os.path.join(data_path, 'customer_profiles.csv')
-    transactions_path = os.path.join(data_path, 'transactions.csv')
-    country_risk_path = os.path.join(data_path, 'country_risk_ratings.csv')
-    labeled_cases_path = os.path.join(data_path, 'labeled_cases.csv')
+    customer_profiles_path = os.path.join(data_csv_path, 'customer_profiles.csv')
+    transactions_path = os.path.join(data_csv_path, 'transactions.csv')
+    country_risk_path = os.path.join(data_csv_path, 'country_risk_ratings.csv')
+    labeled_cases_path = os.path.join(data_csv_path, 'labeled_cases.csv')
     
     # Step 1: Generate customer profiles
     print("\nGenerating customer profiles...")
@@ -217,9 +221,19 @@ def generate_all_files(num_customers=1000, num_transactions=10000, data_path=Non
     }
 
 if __name__ == "__main__":
-    # Configuration parameters - modify these values as needed
-    NUM_CUSTOMERS = 10000
-    NUM_TRANSACTIONS = 100000
+    # Get configuration parameters from user
+    try:
+        print("\n" + "="*60)
+        print("AML Data Generation Configuration")
+        print("="*60)
+        NUM_CUSTOMERS = int(input("Enter number of customers to generate (recommended: 1000-10000): ").strip() or "10000")
+        NUM_TRANSACTIONS = int(input("Enter number of transactions to generate (recommended: 10000-100000): ").strip() or "100000")
+        
+        print(f"\nGenerating data for {NUM_CUSTOMERS} customers and {NUM_TRANSACTIONS} transactions...")
+    except ValueError:
+        print("Invalid input. Using default values.")
+        NUM_CUSTOMERS = 10000
+        NUM_TRANSACTIONS = 100000
     
     # Use the directory where this script is located
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

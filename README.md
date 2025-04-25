@@ -8,10 +8,12 @@ This project implements a complete AML detection system using machine learning t
 
 - Synthetic data generation for testing and development
 - Customer profile risk scoring
-- Transaction pattern analysis  
+- Transaction pattern analysis
 - Machine learning-based anomaly detection
+- Data validation and automatic inconsistency fixing
 - Visualization of results and model performance
 - Exportable reports of suspicious activities
+- Time-stamped results for audit trails
 
 ## Suspicious Transaction Detection Criteria
 
@@ -44,23 +46,30 @@ The model calculates a composite risk score from these factors, with indicators 
 
 ```
 ├── aml_model_random_forest.pkl    # Trained model file
-├── country_risk_ratings.csv       # Country risk assessment data
-├── customer_profiles.csv          # Customer demographic data
 ├── gen_all.py                     # Data generation script
 ├── generate_customer_profiles.py  # Customer data generator
 ├── generate_labeled_cases.py      # Label generation for training data
 ├── generate_transactions.py       # Transaction data generator
-├── labeled_cases.csv              # Labeled data for model training
 ├── main.py                        # Main AML detection script
-├── transactions.csv               # Transaction dataset
+├── README.md                      # Project documentation
+├── data_csv/                      # Directory for data files
+│   ├── country_risk_ratings.csv   # Country risk assessment data
+│   ├── customer_profiles.csv      # Customer demographic data
+│   ├── labeled_cases.csv          # Labeled data for model training
+│   └── transactions.csv           # Transaction dataset
 └── results/                       # Output directory for results
-    ├── aml_detection_results_*.txt         # Detection result reports
-    ├── confusion_matrix_*.png              # Model evaluation metrics
-    ├── feature_importance_*.png            # Feature importance chart
-    ├── pr_curve_*.png                      # Precision-recall curve
-    ├── roc_curve_*.png                     # ROC curve visualization
-    ├── suspicious_customers_*.csv          # Flagged customers report
-    └── suspicious_transactions_*.csv       # Flagged transactions report
+    └── results_YYYYMMDD_HHMMSS/   # Timestamped results directory
+        ├── aml_detection_results_*.txt         # Detection result reports
+        ├── confusion_matrix.png                # Model evaluation metrics
+        ├── feature_importance_*.png            # Feature importance chart
+        ├── pr_curve.png                        # Precision-recall curve
+        ├── roc_curve.png                       # ROC curve visualization
+        ├── suspicious_customers_*.csv          # Flagged customers report
+        ├── suspicious_transactions_*.csv       # Flagged transactions report
+        ├── country_risk_ratings.csv            # Copy of input data
+        ├── customer_profiles.csv               # Copy of input data
+        ├── transactions.csv                    # Copy of input data
+        └── labeled_cases.csv                   # Copy of input data
 ```
 
 ## Requirements
@@ -97,7 +106,7 @@ If you need to generate synthetic data for testing:
 python gen_all.py
 ```
 
-This will create the following files:
+This will create the following files in the `data_csv` directory:
 - `customer_profiles.csv` - Synthetic customer data
 - `transactions.csv` - Synthetic transaction data
 - `country_risk_ratings.csv` - Country risk assessment data
@@ -113,18 +122,21 @@ python main.py
 
 This will:
 1. Load and validate the data
-2. Train a Random Forest classifier on the labeled data
-3. Evaluate the model performance
-4. Generate visualizations and reports
-5. Export lists of suspicious customers and transactions
+2. Automatically fix data inconsistencies if possible
+3. Train a Random Forest classifier on the labeled data
+4. Evaluate the model performance
+5. Generate visualizations and reports
+6. Export lists of suspicious customers and transactions
+7. Create a timestamped results folder with all outputs and data copies for audit purposes
 
 ### Output and Results
 
-The system generates several outputs in the `results/` directory:
+The system generates several outputs in the `results/results_YYYYMMDD_HHMMSS/` directory:
 - Text report with model performance metrics
 - Visualizations of model performance (ROC curve, PR curve, etc.)
-- List of suspicious customers identified
+- List of suspicious customers identified and ranked by risk score
 - Detailed suspicious transactions with risk scores
+- Copies of input data files for reproducibility and audit trails
 
 ## How It Works
 
@@ -138,22 +150,48 @@ The AML detection system works through the following steps:
 2. **Feature Engineering**:
    - Calculates transaction statistics per customer
    - Incorporates country risk factors
-   - Analyzes transaction patterns and behaviors 
+   - Analyzes transaction patterns and behaviors
+   - Calculates transaction velocity and variability metrics
 
 3. **Model Training**:
    - Trains a Random Forest model on labeled suspicious cases
    - Uses grid search for hyperparameter optimization
    - Evaluates model performance with cross-validation
+   - Supports multiple model types (Random Forest, Gradient Boosting, Logistic Regression)
 
 4. **Risk Detection**:
    - Applies the model to all customers and transactions
    - Ranks customers and transactions by risk score
    - Flags suspicious activities for investigation
+   - Calculates transaction-specific risk scores
 
 5. **Reporting**:
    - Generates performance metrics reports
    - Creates visualizations of model effectiveness
    - Exports detailed lists of suspicious activities
+   - Provides feature importance analysis
+
+## Model Customization
+
+The AML detection system supports different model types:
+
+1. **Random Forest (default)**: Best for capturing complex patterns and interactions between features
+```python
+# To use Random Forest model
+aml_model.train_model(model_type='random_forest')
+```
+
+2. **Gradient Boosting**: May provide higher accuracy in some cases
+```python
+# To use Gradient Boosting model
+aml_model.train_model(model_type='gradient_boosting')
+```
+
+3. **Logistic Regression**: Simpler model with more interpretable coefficients
+```python
+# To use Logistic Regression model
+aml_model.train_model(model_type='logistic_regression')
+```
 
 ## Model Performance
 
@@ -163,6 +201,7 @@ The system evaluates model performance using:
 - Precision-recall curve
 - Confusion matrix
 - Feature importance analysis
+- SHAP values for model interpretability
 
 ## License
 

@@ -107,14 +107,19 @@ def generate_labeled_cases(customer_profiles_file, transactions_file, ratio_susp
     return labeled_cases
 
 if __name__ == "__main__":
+    # Create data_csv folder if it doesn't exist
+    import os
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_csv')
+    os.makedirs(data_dir, exist_ok=True)
+    
     print("Generating labeled cases...")
-    customer_profiles_path = 'customer_profiles.csv'
-    transactions_path = 'transactions.csv'
+    customer_profiles_path = os.path.join(data_dir, 'customer_profiles.csv')
+    transactions_path = os.path.join(data_dir, 'transactions.csv')
     
     labeled_cases_df = generate_labeled_cases(customer_profiles_path, transactions_path)
     
     # Save to CSV
-    labeled_cases_path = 'labeled_cases.csv'
+    labeled_cases_path = os.path.join(data_dir, 'labeled_cases.csv')
     labeled_cases_df.to_csv(labeled_cases_path, index=False)
     print(f"Labeled cases saved to {labeled_cases_path}")
     

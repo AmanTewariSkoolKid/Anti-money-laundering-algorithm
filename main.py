@@ -39,6 +39,8 @@ class AMLModel:
         self.y_train = None
         self.y_test = None
         self.feature_names = None
+        # Initialize single timestamp for all file operations
+        self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
     def validate_data_consistency(self, fix_inconsistencies=True):
         """Validate that primary and foreign keys are consistent across all files
@@ -519,13 +521,10 @@ class AMLModel:
             print("Error: No results to visualize.")
             return
             
-        # Create output directory if it doesn't exist - using absolute path
-        output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results')
-        print(f"Saving results to: {output_dir}")
+        # Create output directory using the timestamp from initialization
+        output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results', f'results_{self.timestamp}')
+        print(f"Saving visualizations to: {output_dir}")
         os.makedirs(output_dir, exist_ok=True)
-        
-        # Timestamp for unique filenames
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
         # 1. Confusion Matrix
         plt.figure(figsize=(8, 6))
@@ -540,7 +539,7 @@ class AMLModel:
         plt.xlabel('Predicted')
         plt.ylabel('Actual')
         plt.title('Confusion Matrix')
-        confusion_path = os.path.join(output_dir, f'confusion_matrix_{timestamp}.png')
+        confusion_path = os.path.join(output_dir, 'confusion_matrix.png')
         plt.savefig(confusion_path)
         plt.close()
         
@@ -559,7 +558,7 @@ class AMLModel:
         plt.ylabel('True Positive Rate')
         plt.title('Receiver Operating Characteristic (ROC) Curve')
         plt.legend(loc="lower right")
-        roc_path = os.path.join(output_dir, f'roc_curve_{timestamp}.png')
+        roc_path = os.path.join(output_dir, 'roc_curve.png')
         plt.savefig(roc_path)
         plt.close()
         
@@ -575,7 +574,7 @@ class AMLModel:
         plt.ylabel('Precision')
         plt.title('Precision-Recall Curve')
         plt.legend(loc="lower left")
-        pr_path = os.path.join(output_dir, f'pr_curve_{timestamp}.png')
+        pr_path = os.path.join(output_dir, 'pr_curve.png')
         plt.savefig(pr_path)
         plt.close()
         
@@ -610,7 +609,7 @@ class AMLModel:
             plt.yticks(range(len(indices)), [feature_names[i] if i < len(feature_names) else f'Feature {i}' for i in indices])
             plt.xlabel('Feature Importance')
             plt.title('Top 20 Feature Importance')
-            feat_path = os.path.join(output_dir, f'feature_importance_{timestamp}.png')
+            feat_path = os.path.join(output_dir, f'feature_importance_{self.timestamp}.png')
             plt.savefig(feat_path)
             plt.close()
             
@@ -645,7 +644,7 @@ class AMLModel:
                     show=False
                 )
                 plt.title('SHAP Feature Importance')
-                shap_path = os.path.join(output_dir, f'shap_importance_{timestamp}.png')
+                shap_path = os.path.join(output_dir, f'shap_importance_{self.timestamp}.png')
                 plt.savefig(shap_path)
                 plt.close()
         except Exception as e:
@@ -670,12 +669,15 @@ class AMLModel:
             
         # Create output directory if it doesn't exist - using absolute path
         output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results')
-        print(f"Saving results to directory: {output_dir}")
         os.makedirs(output_dir, exist_ok=True)
         
-        # Timestamp for unique filename
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        results_file = os.path.join(output_dir, f'aml_detection_results_{timestamp}.txt')
+        # Use timestamp from initialization
+        timestamp_dir = os.path.join(output_dir, f'results_{self.timestamp}')
+        os.makedirs(timestamp_dir, exist_ok=True)
+        print(f"Saving results to directory: {timestamp_dir}")
+        
+        # Save the results file in the timestamped directory
+        results_file = os.path.join(timestamp_dir, f'aml_detection_results_{self.timestamp}.txt')
         
         with open(results_file, 'w') as f:
             # Write header
@@ -724,7 +726,7 @@ class AMLModel:
                     f.write(f'{name.replace("_", " ").title()}: {path}\n')
             
             # Note about suspicious transactions file
-            suspicious_transactions_file = os.path.join(output_dir, f'suspicious_transactions_{timestamp}.csv')
+            suspicious_transactions_file = os.path.join(timestamp_dir, f'suspicious_transactions_{self.timestamp}.csv')
             f.write('\n' + '-' * 40 + '\n')
             f.write('SUSPICIOUS TRANSACTIONS\n')
             f.write('-' * 40 + '\n\n')
@@ -732,8 +734,23 @@ class AMLModel:
             
         print(f"\nResults saved to: {results_file}")
         
-        # Also save the suspicious transactions details
-        self.save_suspicious_transactions(timestamp, output_dir)
+        # Also save the suspicious transactions details - using the timestamped directory
+        self.save_suspicious_transactions(self.timestamp, timestamp_dir)
+        
+        # Copy input CSV files to the timestamped results directory
+        print("\nCopying input data files to results directory...")
+        import shutil
+        
+        # List of CSV files to copy
+        csv_files = ['customer_profiles.csv', 'transactions.csv', 'country_risk_ratings.csv', 'labeled_cases.csv']
+        
+        # Copy each file to the timestamped directory
+        for csv_file in csv_files:
+            source_path = os.path.join(self.data_path, csv_file)
+            dest_path = os.path.join(timestamp_dir, csv_file)
+            if os.path.exists(source_path):
+                shutil.copy2(source_path, dest_path)
+                print(f"Copied {csv_file} to results directory")
         
         return results_file
         
@@ -841,8 +858,8 @@ class AMLModel:
                 ascending=[False, False]
             )
             
-            # Save the suspicious transactions to CSV
-            suspicious_file = os.path.join(output_dir, f'suspicious_transactions_{timestamp}.csv')
+            # Use the timestamp from class initialization instead of the parameter
+            suspicious_file = os.path.join(output_dir, f'suspicious_transactions_{self.timestamp}.csv')
             print(f"Saving suspicious transactions to: {suspicious_file}")
             suspicious_transactions.to_csv(suspicious_file, index=False)
             
@@ -853,8 +870,8 @@ class AMLModel:
             customer_summary['transaction_count'] = suspicious_customers['transaction_count']
             customer_summary['total_amount'] = suspicious_customers['total_transaction_amount']
             
-            # Save the suspicious customers to CSV
-            customer_file = os.path.join(output_dir, f'suspicious_customers_{timestamp}.csv')
+            # Save the suspicious customers to CSV - use the timestamp from class initialization
+            customer_file = os.path.join(output_dir, f'suspicious_customers_{self.timestamp}.csv')
             print(f"Saving suspicious customer summary to: {customer_file}")
             customer_summary.to_csv(customer_file, index=False)
             
@@ -874,8 +891,12 @@ if __name__ == "__main__":
     print("AML Risk Detection using Machine Learning")
     print("=" * 60)
     
-    # Create AML model
-    aml_model = AMLModel()
+    # Use data_csv folder for data files
+    import os
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_csv')
+    
+    # Create AML model with data_csv path
+    aml_model = AMLModel(data_path=data_dir)
     
     # Validate data consistency
     if not aml_model.validate_data_consistency():
@@ -909,4 +930,4 @@ if __name__ == "__main__":
     
     print(f"\nAML Risk Detection analysis complete!")
     print(f"Results file: {results_file}")
-    print(f"Visualizations directory: {os.path.join(aml_model.data_path, 'results')}")
+    print(f"Visualizations directory: {os.path.join(os.path.dirname(os.path.abspath(__file__)), 'results')}")

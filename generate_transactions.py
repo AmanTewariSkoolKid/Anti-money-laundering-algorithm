@@ -135,13 +135,18 @@ def generate_country_risk_ratings():
     return df
 
 if __name__ == "__main__":
+    # Create data_csv folder if it doesn't exist
+    import os
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_csv')
+    os.makedirs(data_dir, exist_ok=True)
+    
     # Generate transactions
     print("Generating transaction data...")
-    customer_profiles_path = 'customer_profiles.csv'
+    customer_profiles_path = os.path.join(data_dir, 'customer_profiles.csv')
     transactions_df = generate_transactions(customer_profiles_path, num_transactions=10000)
     
     # Save transactions to CSV
-    transactions_output_path = 'transactions.csv'
+    transactions_output_path = os.path.join(data_dir, 'transactions.csv')
     transactions_df.to_csv(transactions_output_path, index=False)
     print(f"Transaction data saved to {transactions_output_path}")
     
@@ -156,6 +161,6 @@ if __name__ == "__main__":
     # Generate and save country risk ratings
     print("\nGenerating country risk ratings...")
     country_risk_df = generate_country_risk_ratings()
-    country_risk_path = 'country_risk_ratings.csv'
+    country_risk_path = os.path.join(data_dir, 'country_risk_ratings.csv')
     country_risk_df.to_csv(country_risk_path, index=False)
     print(f"Country risk ratings saved to {country_risk_path}")

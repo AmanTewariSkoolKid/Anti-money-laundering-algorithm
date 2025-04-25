@@ -85,11 +85,16 @@ def generate_customer_profiles(num_customers=1000):
     return df
 
 if __name__ == "__main__":
+    # Create data_csv folder if it doesn't exist
+    import os
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data_csv')
+    os.makedirs(data_dir, exist_ok=True)
+    
     print("Generating customer profiles...")
     customer_df = generate_customer_profiles(num_customers=1000)
     
     # Save to CSV
-    output_path = 'customer_profiles.csv'
+    output_path = os.path.join(data_dir, 'customer_profiles.csv')
     customer_df.to_csv(output_path, index=False)
     print(f"Customer profiles saved to {output_path}")
     

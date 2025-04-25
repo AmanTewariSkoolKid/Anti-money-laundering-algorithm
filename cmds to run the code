@@ -1,0 +1,3 @@
+python -u "c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\gen_all.py"
+
+python -u "c:\Users\amant\Documents\GitHub\Anti-money-laundering-algorithm\main.py"
